@@ -33,6 +33,9 @@ cd Intelligent-Board
 
 Copy-Item .env.example backend\.env
 Copy-Item .env.example frontend\.env
+Copy-Item .env.example .env
+
+# .env와 backend\.env의 <local-db-password> 값을 로컬 전용 비밀번호로 바꿔주세요.
 
 npm install
 npm run db:up
@@ -54,7 +57,10 @@ npm run dev
 주요 환경 변수:
 
 ```env
-DATABASE_URL="postgresql://artcatch:artcatch@localhost:5432/artcatch?schema=public"
+POSTGRES_USER="artcatch"
+POSTGRES_PASSWORD="<local-db-password>"
+POSTGRES_DB="artcatch"
+DATABASE_URL="postgresql://artcatch:<local-db-password>@localhost:5432/artcatch?schema=public"
 PORT=3001
 FRONTEND_ORIGIN="http://127.0.0.1:5173"
 
