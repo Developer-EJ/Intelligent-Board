@@ -216,20 +216,8 @@ RAG에 들어가는 지식은 `ArtworkKnowledge`로 저장됩니다.
 
 MCP 기능은 이미지 검색 결과에서 외부 자료를 확인할 때 사용됩니다. 사용자가 `작품 자료 찾기`를 누르면 프론트는 백엔드의 `/external-search` API를 호출하고, 백엔드는 MCP stdio 서버와 통신합니다.
 
-```mermaid
-flowchart TD
-  User["사용자: 작품 자료 찾기"] --> FE["Frontend"]
-  FE --> API["GET /external-search?q=..."]
-  API --> Service["ExternalSearchService"]
-  Service --> MCP["MCP stdio Search Server"]
-  MCP --> Tool["artcatch_external_search tool"]
-  Tool --> Tavily["Tavily / Web Sources"]
-  Tavily --> Tool
-  Tool --> MCP
-  MCP --> Service
-  Service --> FE
-  FE --> UI["외부 자료 링크 표시"]
-```
+![MCP architecture overview](artifacts/MCP기능.png)
+
 
 MCP의 역할은 외부 검색을 백엔드 내부 함수로 고정하지 않고, 표준화된 tool 호출 흐름으로 분리하는 것입니다.
 
@@ -244,22 +232,8 @@ MCP의 역할은 외부 검색을 백엔드 내부 함수로 고정하지 않고
 
 Auto-Mod Agent는 게시글/댓글 작성 전에 표현을 검토합니다. 단순 금칙어 필터가 아니라, 상태를 가진 reasoning loop 안에서 필요한 도구를 선택하고 실행합니다.
 
-```mermaid
-flowchart TD
-  Input["게시글/댓글 작성"] --> Rule["rule_check"]
-  Rule --> Planner["LLM Planner"]
+![Agent architecture overview](artifacts/Agent기능.png)
 
-  Planner --> Thread["thread_context_check"]
-  Planner --> History["history_check"]
-  Planner --> Judge["llm_judge"]
-  Planner --> Decide["decide_action"]
-
-  Thread --> Planner
-  History --> Planner
-  Judge --> Planner
-
-  Decide --> Result["allow / warn / hold / report"]
-```
 
 Agent 구성 요소:
 
@@ -283,17 +257,7 @@ Agent로 볼 수 있는 이유:
 
 이미지 검색은 RAG라기보다는 멀티모달 검색 + Vision 재판단 구조입니다.
 
-```mermaid
-flowchart TD
-  Upload["사용자 업로드 이미지"] --> ClipQuery["Local CLIP 임베딩"]
-  ClipQuery --> PgSearch["pgvector 유사 이미지 검색"]
-  PgSearch --> Candidates["후보 작품 N개"]
-  Candidates --> Vision["OpenAI Vision LLM 재랭킹"]
-  Upload --> Vision
-  Vision --> Final["최종 매칭 작품"]
-  Final --> Explain["유사/차이 설명"]
-  Explain --> Share["게시판 공유 초안"]
-```
+![RAG architecture overview](artifacts/RAG기능.png)
 
 역할 분리:
 
